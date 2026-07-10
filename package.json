@@ -1,0 +1,10 @@
+{
+  "name": "personal-outlook-mcp",
+  "private": true,
+  "scripts": {
+    "start": "ms-365-mcp-server --http 3000 --preset outlook"
+  },
+  "dependencies": {
+    "@softeria/ms-365-mcp-server": "latest"
+  }
+}
