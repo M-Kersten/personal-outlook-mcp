@@ -7,16 +7,51 @@ on:
   workflow_dispatch:
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Verify MCP server exists
+        run: ls node_modules/.bin
+
+      - name: Create deployment package
+        run: zip -r release.zip . -x ".git/*"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: node-app
+          path: release.zip
+
+
   deploy:
     runs-on: ubuntu-latest
+
+    needs: build
 
     permissions:
       id-token: write
       contents: read
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: node-app
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -30,4 +65,4 @@ jobs:
         with:
           app-name: personal-outlook-mcp
           slot-name: Production
-          package: .
+          package: release.zip
