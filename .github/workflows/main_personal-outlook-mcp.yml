@@ -1,3 +1,6 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
 name: Build and deploy Node.js app to Azure Web App - personal-outlook-mcp
 
 on:
@@ -9,60 +12,54 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     permissions:
-      contents: read
+      contents: read #This is required for actions/checkout
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Set up Node.js version
+        uses: actions/setup-node@v3
         with:
           node-version: '22.x'
 
-      - name: Install dependencies
-        run: npm install
+      - name: npm install, build, and test
+        run: |
+          npm install
+          npm run build --if-present
+          npm run test --if-present
 
-      - name: Verify MCP server exists
-        run: ls node_modules/.bin
-
-      - name: Create deployment package
-        run: zip -r release.zip . -x ".git/*"
-
-      - name: Upload artifact
+      - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: release.zip
-
+          path: .
 
   deploy:
     runs-on: ubuntu-latest
-
     needs: build
-
     permissions:
-      id-token: write
-      contents: read
+      id-token: write #This is required for requesting the JWT
+      contents: read #This is required for actions/checkout
 
     steps:
-      - name: Download artifact
+      - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
           name: node-app
-
+      
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_A9F0EB7758C24EBCB15B89479C3BC5D5 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_A4368CF05CFD4A6E908B3C04EBFE36F0 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_8B307E4956C8461782AA0D31BF6E1DC4 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_7E05B3264F7844D891C01275F8C3BE30 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_CC2EC0BA724B40969F03393A2B05449E }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_9EB4AAF79E1D48A897F1A3614E61CAE9 }}
 
-      - name: Deploy
+      - name: 'Deploy to Azure Web App'
+        id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: personal-outlook-mcp
-          slot-name: Production
-          package: release.zip
+          app-name: 'personal-outlook-mcp'
+          slot-name: 'Production'
+          package: .
+          
