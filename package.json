@@ -4,7 +4,16 @@
   "scripts": {
     "start": "ms-365-mcp-server --http 3000 --preset outlook"
   },
+  "engines": {
+    "node": "22.x"
+  },
   "dependencies": {
-    "@softeria/ms-365-mcp-server": "latest"
-  }
+    "@softeria/ms-365-mcp-server": "^0.136.0"
+  },
+  "version": "1.0.0",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }
