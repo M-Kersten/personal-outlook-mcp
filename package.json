@@ -2,7 +2,7 @@
   "name": "personal-outlook-mcp",
   "private": true,
   "scripts": {
-    "start": "ms-365-mcp-server --http 3000 --preset outlook"
+    "start": "ms-365-mcp-server --http $PORT --preset outlook"
   },
   "engines": {
     "node": "22.x"
